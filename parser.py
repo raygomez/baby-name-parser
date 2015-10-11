@@ -5,7 +5,6 @@ __author__ = 'raygomez'
 
 RESOURCES = 'babynames'
 
-
 class Name(object):
     def __init__(self):
         self.name = ''
@@ -17,23 +16,24 @@ class Name(object):
 from os import listdir
 from os.path import isfile, join
 
-files = [f for f in listdir(RESOURCES) if isfile(join(RESOURCES,f))]
+files = [join(RESOURCES,f) for f in listdir(RESOURCES) if isfile(join(RESOURCES,f))]
 size = len(files)
 males = {}
 females = {}
-
+years = []
 
 for index, f in enumerate(files):
 
-    #print(index, f)
-    soup = BeautifulSoup(open(join(RESOURCES,f)), 'lxml')
+    soup = BeautifulSoup(open(f), 'lxml')
 
     try:
-        pass
-        #print(soup.h3.get_text())
+        text = soup.h3.get_text()
+        year = text[text.rindex(' ')+1:]
+        years.append(year)
     except AttributeError:
-        pass
-        #print(soup.h2.get_text())
+        text = soup.h2.get_text()
+        year = text[text.rindex(' ')+1:]
+        years.append(year)
 
     table = soup.find_all('table')[1]
     for tr in table.find_all('tr'):
@@ -43,19 +43,22 @@ for index, f in enumerate(files):
 
             name = td[1].string
             if name not in males:
-                male = {'name': name, 'rank' : [None]*size}
+                male = {'name': name, 'rank' : ['']*size}
                 males[name] = male
             males[name]['rank'][index] = rank
 
             name = td[2].string
             if name not in females:
-                female = {'name': name, 'rank' : [None]*size}
+                female = {'name': name, 'rank' : ['']*size}
                 females[name] = female
             females[name]['rank'][index] = rank
 
-# with open('male.csv', 'w') as f:
-#     for name in sorted(males.iteritems()):
-#         f.write('{},{}'.format(name['name'], ','.join(name['rank'])))
-#
+with open('male.csv', 'w') as f:
+    f.write("{},{}\n".format('Name', ','.join(years)))
+    for name in sorted(males.iteritems()):
+        f.write('{},{}\n'.format(name[1]['name'], ','.join(name[1]['rank'])))
 
-print(females)
+with open('female.csv', 'w') as f:
+    f.write("{},{}\n".format('Name', ','.join(years)))
+    for name in sorted(females.iteritems()):
+        f.write('{},{}\n'.format(name[1]['name'], ','.join(name[1]['rank'])))
