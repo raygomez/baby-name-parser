@@ -1,20 +1,12 @@
 from __future__ import print_function
 from bs4 import BeautifulSoup
 
+from os import listdir
+from os.path import isfile, join
+
 __author__ = 'raygomez'
 
 RESOURCES = 'babynames'
-
-class Name(object):
-    def __init__(self):
-        self.name = ''
-        self.gender = ''
-        self.years = []
-        self.rank = []
-
-
-from os import listdir
-from os.path import isfile, join
 
 files = [join(RESOURCES,f) for f in listdir(RESOURCES) if isfile(join(RESOURCES,f))]
 size = len(files)
