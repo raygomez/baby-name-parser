@@ -1,5 +1,5 @@
 from __future__ import print_function
-from bs4 import BeautifulSoup
+import re
 
 from os import listdir
 from os.path import isfile, join
@@ -14,32 +14,30 @@ males = {}
 females = {}
 years = []
 
+name_regex = re.compile('<tr align="right"><td>(\w+)</td><td>(\w+)</td><td>(\w+)</td>')
+header_regex = re.compile('<h3 align="center">Popularity in (\d+)</h3>')
+other_header_regex = re.compile('<h2>Popularity in (\d+)</h2>')
+
 for index, f in enumerate(files):
+    with open(f) as f:
+        text = f.read()
+        try:
+            year_result = re.findall(header_regex, text)
+            years.append(year_result[0])
+        except IndexError:
+            year_result = re.findall(other_header_regex, text)
+            years.append(year_result[0])
 
-    soup = BeautifulSoup(open(f), 'lxml')
+        for results in re.findall(name_regex, text):
+            rank = results[0]
 
-    try:
-        text = soup.h3.get_text()
-        year = text[text.rindex(' ')+1:]
-        years.append(year)
-    except AttributeError:
-        text = soup.h2.get_text()
-        year = text[text.rindex(' ')+1:]
-        years.append(year)
-
-    table = soup.find_all('table')[1]
-    for tr in table.find_all('tr'):
-        if tr.has_attr('align') and tr['align'] == 'right':
-            td = tr.find_all('td')
-            rank = td[0].string
-
-            name = td[1].string
+            name = results[1]
             if name not in males:
                 male = {'name': name, 'rank' : ['']*size}
                 males[name] = male
             males[name]['rank'][index] = rank
 
-            name = td[2].string
+            name = results[2]
             if name not in females:
                 female = {'name': name, 'rank' : ['']*size}
                 females[name] = female
