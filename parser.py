@@ -42,6 +42,7 @@ for index, f in enumerate(files):
             add_name_to_list(males, results[1], rank, index)
             add_name_to_list(females, results[2], rank, index)
 
+
 def write_names(filename, list_of_names):
     with open(filename, 'w') as f:
         f.write("{},{}\n".format('Name', ','.join(years)))

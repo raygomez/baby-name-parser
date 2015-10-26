@@ -1,6 +1,6 @@
 # baby-name-parser
 
-Given a set of files (babyy<year>.html), create a script that will do the following:
+Given a set of files (baby<year>.html), create a script that will do the following:
 * Extract the year, rank, baby name and gender.
 * Print the extracted data to a male.csv (Male) and female.csv (Female) in the following format:
 
